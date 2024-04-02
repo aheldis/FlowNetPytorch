@@ -399,8 +399,8 @@ def train(train_loader, model, optimizer, epoch, train_writer):
 
 def fgsm_attack(image, epsilon, data_grad):
     sign_data_grad = data_grad.sign()
-    perturbed_image = image + epsilon*sign_data_grad
-    perturbed_image = torch.clamp(perturbed_image, 0, 255)
+    perturbed_image = image + epsilon * sign_data_grad
+    perturbed_image = torch.clamp(perturbed_image, 0, 1)
     return perturbed_image
 
 
@@ -422,8 +422,6 @@ def validate(val_loader, model, epoch, output_writers):
         if args.attack_type != 'None':
             input.requires_grad = True # for attack
 
-        print(input)
-
         output = model(input)
 
         if args.attack_type != 'None':
@@ -431,7 +429,7 @@ def validate(val_loader, model, epoch, output_writers):
                 epsilon = args.epsilon
                 pgd_iters = 1
             else:
-                epsilon = 2.5 * args.epsilon / args.iters
+                epsilon = 2.5 * args.epsilon / args.iters / 255
                 pgd_iters = args.iters
 
             ori = input.data
