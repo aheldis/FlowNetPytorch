@@ -422,7 +422,7 @@ def validate(val_loader, model, epoch, output_writers):
         if args.attack_type != 'None':
             input.requires_grad = True # for attack
 
-        print(max(input), min(input))
+        print(input)
 
         output = model(input)
 
