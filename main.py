@@ -397,6 +397,13 @@ def train(train_loader, model, optimizer, epoch, train_writer):
     return losses.avg, flow2_EPEs.avg
 
 
+def fgsm_attack(image, epsilon, data_grad):
+    sign_data_grad = data_grad.sign()
+    perturbed_image = image + epsilon*sign_data_grad
+    perturbed_image = torch.clamp(perturbed_image, 0, 255)
+    return perturbed_image
+
+
 def validate(val_loader, model, epoch, output_writers):
     global args
 
@@ -415,30 +422,31 @@ def validate(val_loader, model, epoch, output_writers):
         if args.attack_type != 'None':
             input.requires_grad = True # for attack
 
-        print(input.shape)
+        print(max(input), min(input))
+
         output = model(input)
 
-        # if args.attack_type != 'None':
-        #     if args.attack_type == 'FGSM':
-        #         epsilon = args.epsilon
-        #         pgd_iters = 1
-        #     else:
-        #         epsilon = 2.5 * args.epsilon / args.iters
-        #         pgd_iters = args.iters
+        if args.attack_type != 'None':
+            if args.attack_type == 'FGSM':
+                epsilon = args.epsilon
+                pgd_iters = 1
+            else:
+                epsilon = 2.5 * args.epsilon / args.iters
+                pgd_iters = args.iters
 
-        #     ori = input.data
-        #     for itr in range(pgd_iters):
-        #         flow2_EPE = args.div_flow * realEPE(output, target, sparse=args.sparse)
-        #         model.zero_grad()
-        #         flow2_EPE.backward()
+            ori = input.data
+            for itr in range(pgd_iters):
+                flow2_EPE = args.div_flow * realEPE(output, target, sparse=args.sparse)
+                model.zero_grad()
+                flow2_EPE.backward()
 
-        #         data_grad = input.grad.data
-        #         if args.channel == -1:
-        #             input.data = fgsm_attack(input, epsilon, data_grad)
-        #         else:
-        #             input.data[:, args.channel, :, :] = fgsm_attack(input, epsilon, data_grad)[:, args.channel, :, :]
-        #         if args.attack_type == 'PGD':
-        #             input.data = ori + torch.clamp(input.data - ori, -args.epsilon, args.epsilon)
+                data_grad = input.grad.data
+                if args.channel == -1:
+                    input.data[:, :3, :, :] = fgsm_attack(input, epsilon, data_grad)
+                else:
+                    input.data[:, args.channel, :, :] = fgsm_attack(input, epsilon, data_grad)[:, args.channel, :, :]
+                if args.attack_type == 'PGD':
+                    input.data = ori + torch.clamp(input.data - ori, -args.epsilon, args.epsilon)
 
 
         flow2_EPE = args.div_flow * realEPE(output, target, sparse=args.sparse)
