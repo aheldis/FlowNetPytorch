@@ -445,6 +445,8 @@ def validate(val_loader, model, epoch, output_writers):
                     input.data[:, args.channel, :, :] = fgsm_attack(input, epsilon, data_grad)[:, args.channel, :, :]
                 if args.attack_type == 'PGD':
                     input.data = ori + torch.clamp(input.data - ori, -args.epsilon, args.epsilon)
+                    
+                output = model(input)
 
 
         flow2_EPE = args.div_flow * realEPE(output, target, sparse=args.sparse)
