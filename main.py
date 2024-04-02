@@ -440,7 +440,7 @@ def validate(val_loader, model, epoch, output_writers):
 
                 data_grad = input.grad.data
                 if args.channel == -1:
-                    input.data[:, :3, :, :] = fgsm_attack(input, epsilon, data_grad)
+                    input.data[:, :3, :, :] = fgsm_attack(input, epsilon, data_grad)[:, :3, :, :]
                 else:
                     input.data[:, args.channel, :, :] = fgsm_attack(input, epsilon, data_grad)[:, args.channel, :, :]
                 if args.attack_type == 'PGD':
