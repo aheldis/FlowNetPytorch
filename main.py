@@ -160,6 +160,11 @@ parser.add_argument(
     help="epochs at which learning rate is divided by 2",
 )
 
+parser.add_argument('--attack_type', help='Attack type options: None, FGSM, PGD', type=str, default='None')
+parser.add_argument('--iters', help='Number of iters for PGD?', type=int, default=10)
+parser.add_argument('--epsilon', help='epsilon?', type=int, default=10)
+parser.add_argument('--channel', help='Color channel options: 0, 1, 2, -1 (all)', type=int, default=-1) 
+
 
 best_EPE = -1
 n_iter = 0
@@ -407,7 +412,35 @@ def validate(val_loader, model, epoch, output_writers):
         input = torch.cat(input, 1).to(device)
 
         # compute output
+        if args.attack_type != 'None':
+            input.requires_grad = True # for attack
+
+        print(input.shape)
         output = model(input)
+
+        # if args.attack_type != 'None':
+        #     if args.attack_type == 'FGSM':
+        #         epsilon = args.epsilon
+        #         pgd_iters = 1
+        #     else:
+        #         epsilon = 2.5 * args.epsilon / args.iters
+        #         pgd_iters = args.iters
+
+        #     ori = input.data
+        #     for itr in range(pgd_iters):
+        #         flow2_EPE = args.div_flow * realEPE(output, target, sparse=args.sparse)
+        #         model.zero_grad()
+        #         flow2_EPE.backward()
+
+        #         data_grad = input.grad.data
+        #         if args.channel == -1:
+        #             input.data = fgsm_attack(input, epsilon, data_grad)
+        #         else:
+        #             input.data[:, args.channel, :, :] = fgsm_attack(input, epsilon, data_grad)[:, args.channel, :, :]
+        #         if args.attack_type == 'PGD':
+        #             input.data = ori + torch.clamp(input.data - ori, -args.epsilon, args.epsilon)
+
+
         flow2_EPE = args.div_flow * realEPE(output, target, sparse=args.sparse)
         # record EPE
         flow2_EPEs.update(flow2_EPE.item(), target.size(0))
