@@ -425,14 +425,22 @@ def validate(val_loader, model, epoch, output_writers):
         output = model(input)
 
         if args.attack_type != 'None':
-            if args.attack_type == 'FGSM':
+            ori = input.data
+            if args.attack_type == "RAND":
+                epsilon = args.epsilon
+                shape = input.shape
+                delta = (np.random.rand(np.product(shape)).reshape(shape) - 0.5) * 2 * epsilon / 255
+                input.data = ori + torch.from_numpy(delta).type(torch.float).cuda()
+                input.data = torch.clamp(input.data, 0.0, 1.0)
+                output = model(input)            
+                pgd_iters = 0
+            elif args.attack_type == 'FGSM':
                 epsilon = args.epsilon
                 pgd_iters = 1
             else:
                 epsilon = 2.5 * args.epsilon / args.iters / 255
                 pgd_iters = args.iters
 
-            ori = input.data
             for itr in range(pgd_iters):
                 flow2_EPE = args.div_flow * realEPE(output, target, sparse=args.sparse)
                 model.zero_grad()
