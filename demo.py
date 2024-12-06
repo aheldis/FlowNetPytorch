@@ -183,6 +183,11 @@ if __name__ == '__main__':
     "-a",
     metavar="ARCH",
     default="flownets")
+    parser.add_argument(
+    "--div-flow",
+    default=20,
+    help="value by which flow will be divided. Original value is 20 but 1 with batchNorm gives good results",
+    )
 
     args = parser.parse_args()
     
