@@ -183,10 +183,7 @@ if __name__ == '__main__':
     "--arch",
     "-a",
     metavar="ARCH",
-    default="flownets",
-    choices=model_names,
-    help="model architecture, overwritten if pretrained is specified: "
-    + " | ".join(model_names),)
+    default="flownets")
 
     args = parser.parse_args()
     
