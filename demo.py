@@ -143,7 +143,7 @@ def demo(args):
         
             for iter in range(pgd_iters):
                 flow = output
-                flow2_EPE = args.div_flow * realEPE(output, target, sparse=args.sparse)
+                flow2_EPE = args.div_flow * realEPE(output, flow_gt, sparse=args.sparse)
                 model.zero_grad()
                 inp.requires_grad = True
                 flow2_EPE.backward()
