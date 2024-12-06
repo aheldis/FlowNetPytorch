@@ -112,7 +112,7 @@ def demo(args):
         print(torch.max(image1), torch.min(image1))
         print(image1.shape)
 
-        inp = [img1, img2]
+        inp = [image1, image2]
         inp = torch.cat(inp, 1).to(device)
 
 
