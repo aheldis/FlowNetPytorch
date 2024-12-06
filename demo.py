@@ -8,7 +8,7 @@ import glob
 import numpy as np
 import torch
 from PIL import Image, ImageOps
-
+import torch.backends.cudnn as cudnn
 import flow_viz
 # from utils.utils import InputPadder
 import torchvision.transforms as T
