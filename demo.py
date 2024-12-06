@@ -178,7 +178,7 @@ if __name__ == '__main__':
     parser.add_argument('--epsilon', help='epsilon?', type=int, default=10.0)
     parser.add_argument('--channel', help='Color channel options: 0, 1, 2, -1 (all)', type=int, default=-1)  
     parser.add_argument('--iters', help='Number of iters for PGD?', type=int, default=50) 
-    "--pretrained", dest="pretrained", default=None, help="path to pre-trained model"
+    parser.add_argument("--pretrained", dest="pretrained", default=None, help="path to pre-trained model")
     parser.add_argument(
     "--arch",
     "-a",
