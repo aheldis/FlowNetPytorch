@@ -9,7 +9,6 @@ import numpy as np
 import torch
 from PIL import Image, ImageOps
 
-from raft import RAFT
 import flow_viz
 # from utils.utils import InputPadder
 import torchvision.transforms as T
