@@ -188,6 +188,12 @@ if __name__ == '__main__':
     default=20,
     help="value by which flow will be divided. Original value is 20 but 1 with batchNorm gives good results",
     )
+    parser.add_argument(
+    "--sparse",
+    action="store_true",
+    help="look for NaNs in target flow when computing EPE, avoid if flow is garantied to be dense,"
+    "automatically seleted when choosing a KITTIdataset",
+)
 
     args = parser.parse_args()
     
