@@ -22,7 +22,7 @@ DEVICE = 'cuda'
 
 def load_image(imfile, transform):
     image = Image.open(imfile)
-    image = transform(image)
+    # image = transform(image)
     img = np.array(image).astype(np.uint8)
     img = torch.from_numpy(img).permute(2, 0, 1).float()
     return img[None].to(DEVICE)
