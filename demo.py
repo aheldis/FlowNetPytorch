@@ -59,9 +59,9 @@ def viz(args, img1, flo, gt_flo, _id):
     # flox_gray = Image.fromarray(_class.astype('uint8'), 'L')    
 
     flox_rgb = Image.fromarray(gt_flo.astype('uint8'), 'RGB')
-    flox_rgb.save(args.output_path + '/attacked_flow_' + _id + '.png')
+    flox_rgb.save(args.output_path + '/attacked_flow_by_raft' + _id + '.png')
     flox_rgb = Image.fromarray(flo.astype('uint8'), 'RGB')
-    flox_rgb.save(args.output_path + '/predicted_flow_' + _id + '.png')
+    flox_rgb.save(args.output_path + '/attacked_flow_by_flownet' + _id + '.png')
 
     # flox_rgb = Image.fromarray(img.astype('uint8'), 'RGB')
     # flox_rgb.save(args.output_path + '/' + 'img1.png')
@@ -135,6 +135,9 @@ def demo(args):
 
         epe = torch.sum((output - output2)**2, dim=0).sqrt().view(-1)
         epe_list.append(epe.view(-1).detach().cpu().numpy())
+
+        viz(args, inp, output2.detach(), output.detach(), str(_id))
+
         
         # start attack
         if args.attack_type != 'None':
@@ -178,7 +181,6 @@ def demo(args):
             epe = torch.sum((output - flow_gt)**2, dim=0).sqrt().view(-1)
             epe_list_flownet.append(epe.view(-1).detach().cpu().numpy())
 
-        viz(args, inp, output.detach(), flow_gt.detach(), str(_id))
         _id += 1
 
     epe_all = np.concatenate(epe_list)
