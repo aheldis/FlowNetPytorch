@@ -104,7 +104,7 @@ def demo(args):
     paths = []
     for entry in os.listdir(args.attacked_path):
         if entry.endswith(".png"):
-            paths.append(entry)
+            paths.append(os.path.join(args.attacked_path, entry))
     paths.sort()
 
     # with torch.no_grad():
