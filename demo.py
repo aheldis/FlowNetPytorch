@@ -127,6 +127,7 @@ def demo(args):
         inp = torch.cat(inp, 1).to(device)
 
         inp2 = [attacked_image, image2]
+        inp2 = torch.cat(inp2, 1).to(device)
 
 
         output = model(inp)
