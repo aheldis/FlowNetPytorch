@@ -134,7 +134,7 @@ def demo(args):
         output2 = model(inp2)
 
         epe = torch.sum((output - output2)**2, dim=0).sqrt().view(-1)
-        epe_list.append(epe.view(-1).detach().numpy())
+        epe_list.append(epe.view(-1).detach().cpu().numpy())
         
         # start attack
         if args.attack_type != 'None':
@@ -176,7 +176,7 @@ def demo(args):
                     inp.data = ori + torch.clamp(offset, -args.epsilon, args.epsilon)
             output = model(inp)
             epe = torch.sum((output - flow_gt)**2, dim=0).sqrt().view(-1)
-            epe_list_flownet.append(epe.view(-1).detach().numpy())
+            epe_list_flownet.append(epe.view(-1).detach().cpu().numpy())
 
         viz(args, inp, output.detach(), flow_gt.detach(), str(_id))
         _id += 1
