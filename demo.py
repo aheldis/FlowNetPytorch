@@ -100,23 +100,39 @@ def demo(args):
     model.to(DEVICE)
     model.eval()
 
+
+    paths = []
+    for entry in os.listdir(args.attacked_path):
+        if entry.endswith(".png"):
+            paths.append(entry)
+
     # with torch.no_grad():
     _id = 0
     images = glob.glob(os.path.join(args.path, '*.png')) + \
                 glob.glob(os.path.join(args.path, '*.jpg'))
     
     images = sorted(images)
+    epe_list = []
+    epe_list_flownet = []
+
     for imfile1, imfile2 in zip(images[:-1], images[1:]):
         image1 = load_image(imfile1, transform)
         image2 = load_image(imfile2, transform)
+        attacked_image = load_image(paths[_id], transform)
         print(torch.max(image1), torch.min(image1))
         print(image1.shape)
 
         inp = [image1, image2]
         inp = torch.cat(inp, 1).to(device)
 
+        inp2 = [attacked_image, image2]
+
 
         output = model(inp)
+        output2 = model(inp2)
+
+        epe = torch.sum((output - output2)**2, dim=0).sqrt().view(-1)
+        epe_list.append(epe.view(-1).detach().numpy())
         
         # start attack
         if args.attack_type != 'None':
@@ -157,15 +173,25 @@ def demo(args):
                     offset = inp.data - ori
                     inp.data = ori + torch.clamp(offset, -args.epsilon, args.epsilon)
             output = model(inp)
+            epe = torch.sum((output - flow_gt)**2, dim=0).sqrt().view(-1)
+            epe_list_flownet.append(epe.view(-1).detach().numpy())
+
         viz(args, inp, output.detach(), flow_gt.detach(), str(_id))
         _id += 1
 
+    epe_all = np.concatenate(epe_list)
+    epe = np.mean(epe_all)
+    print('raft:', epe)
+    epe_all = np.concatenate(epe_list_flownet)
+    epe = np.mean(epe_all)
+    print('flownet:', epe)
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()
     parser.add_argument('--model', help="restore checkpoint")
     parser.add_argument('--path', help="dataset for evaluation")
     parser.add_argument('--output_path', help="output viz")
+    parser.add_argument('--attacked_path', help="dataset for comparison")
     parser.add_argument('--small', action='store_true', help='use small model')
     parser.add_argument('--mixed_precision', action='store_true', help='use mixed precision')
     parser.add_argument('--alternate_corr', action='store_true', help='use efficent correlation implementation')
