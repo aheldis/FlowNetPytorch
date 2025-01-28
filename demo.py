@@ -58,10 +58,10 @@ def viz(args, img1, flo, gt_flo, _id):
     # flox_gray = ImageOps.grayscale(flox_rgb)    
     # flox_gray = Image.fromarray(_class.astype('uint8'), 'L')    
 
-    flox_rgb = Image.fromarray(gt_flo.astype('uint8'), 'RGB')
-    flox_rgb.save(args.output_path + '/attacked_flow_by_raft' + _id + '.png')
+    # flox_rgb = Image.fromarray(gt_flo.astype('uint8'), 'RGB')
+    # flox_rgb.save(args.output_path + '/attacked_flow_by_raft' + _id + '.png')
     flox_rgb = Image.fromarray(flo.astype('uint8'), 'RGB')
-    flox_rgb.save(args.output_path + '/attacked_flow_by_flownet' + _id + '.png')
+    flox_rgb.save(args.output_path + '/attacked_flow_by_raft' + _id + '.png')
 
     # flox_rgb = Image.fromarray(img.astype('uint8'), 'RGB')
     # flox_rgb.save(args.output_path + '/' + 'img1.png')
